@@ -1,1 +1,3 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts
+@tokenized-strategy/=lib/tokenized-strategy/src
+@periphery/=lib/tokenized-strategy-periphery/src
