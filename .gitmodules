@@ -10,3 +10,6 @@
 [submodule "packages/foundry/lib/tokenized-strategy"]
 	path = packages/foundry/lib/tokenized-strategy
 	url = https://github.com/yearn/tokenized-strategy
+[submodule "packages/foundry/lib/tokenized-strategy-periphery"]
+	path = packages/foundry/lib/tokenized-strategy-periphery
+	url = https://github.com/yearn/tokenized-strategy-periphery
