@@ -10,3 +10,6 @@
 [submodule "packages/foundry/lib/tokenized-strategy-periphery"]
 	path = packages/foundry/lib/tokenized-strategy-periphery
 	url = https://github.com/yearn/tokenized-strategy-periphery
+[submodule "packages/foundry/lib/openzeppelin-contracts"]
+	path = packages/foundry/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
