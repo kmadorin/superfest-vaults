@@ -11,7 +11,7 @@ import {IOracle} from "./interfaces/IOracle.sol";
 // Uniswap V3 Swapper
 import {UniswapV3Swapper} from "@periphery/swappers/UniswapV3Swapper.sol";
 
-contract CompoundV3Lender is BaseStrategy, UniswapV3Swapper {
+contract CompoundVault is BaseStrategy, UniswapV3Swapper {
     using SafeERC20 for ERC20;
 
     address internal constant weth = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;

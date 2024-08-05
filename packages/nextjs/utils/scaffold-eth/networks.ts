@@ -1,5 +1,6 @@
 import * as chains from "viem/chains";
 import scaffoldConfig from "~~/scaffold.config";
+import { vMainnet } from "~~/tenderly.config";
 
 type ChainAttributes = {
   // color | [lightThemeColor, darkThemeColor]
@@ -31,6 +32,7 @@ export const RPC_CHAIN_NAMES: Record<number, string> = {
   [chains.base.id]: "base-mainnet",
   [chains.baseGoerli.id]: "base-goerli",
   [chains.baseSepolia.id]: "base-sepolia",
+  [vMainnet.id]: "virtual-mainnet",
 };
 
 export const getAlchemyHttpUrl = (chainId: number) => {
@@ -79,6 +81,9 @@ export const NETWORKS_EXTRA_DATA: Record<string, ChainAttributes> = {
     color: "#1969ff",
   },
   [chains.scrollSepolia.id]: {
+    color: "#fbebd4",
+  },
+  [vMainnet.id]: {
     color: "#fbebd4",
   },
 };

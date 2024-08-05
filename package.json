@@ -12,6 +12,7 @@
     "chain": "yarn workspace @se-2/foundry chain",
     "compile": "yarn workspace @se-2/foundry compile",
     "deploy": "yarn workspace @se-2/foundry deploy",
+    "deploy:virtual": "yarn workspace @se-2/foundry deploy:virtual",
     "deploy:verify": "yarn workspace @se-2/foundry deploy:verify",
     "flatten": "yarn workspace @se-2/foundry flatten",
     "fork": "yarn workspace @se-2/foundry fork",
