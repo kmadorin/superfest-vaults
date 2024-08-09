@@ -4,7 +4,7 @@ import { createClient, http } from "viem";
 import { createConfig } from "wagmi";
 import scaffoldConfig from "~~/scaffold.config";
 // import { getAlchemyHttpUrl } from "~~/utils/scaffold-eth";
-import { vMainnet } from "~~/tenderly.config";
+import { vMainnet, vModeMainnet } from "~~/tenderly.config";
 
 // const { targetNetworks } = scaffoldConfig;
 
@@ -31,13 +31,13 @@ import { vMainnet } from "~~/tenderly.config";
 // });
 
 export const wagmiConfig = createConfig({
-  chains: [vMainnet],
+  chains: [vMainnet, vModeMainnet],
   connectors: wagmiConnectors,
   ssr: true,
   client({ chain }) {
     return createClient({
       chain,
-      transport: http(vMainnet.rpcUrls.default.http[0]),
+      transport: http(chain.rpcUrls.default.http[0]),
       pollingInterval: scaffoldConfig.pollingInterval,
     });
   },

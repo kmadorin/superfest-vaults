@@ -2,12 +2,13 @@
 pragma solidity ^0.8.18;
 
 import {BaseStrategy, ERC20} from "@tokenized-strategy/BaseStrategy.sol";
-import {IVault} from "./balancer/IVault.sol";
-import {Errors} from "./balancer/BalancerErrors.sol";
-import {_asIAsset} from "./balancer/ERC20Helpers.sol";
+import {IVault} from "./balancer/interfaces/vault/IVault.sol";
+import {Errors, _require} from "./balancer/helpers/BalancerErrors.sol";
+import {_asIAsset} from "./balancer/helpers/ERC20Helpers.sol";
+import {IERC20} from "./balancer/interfaces/solidity-utils/openzeppelin/IERC20.sol";
+import {WeightedPoolUserData} from "./balancer/pool-weighted/WeightedPoolUserData.sol";
 
 contract ModeBalancerVault is BaseStrategy {
-    using safeERC20 for ERC20;
 
     address public constant MODE = 0xDfc7C877a950e49D2610114102175A06C2e3167a;
     address public constant USDC = 0xd988097fb8612cc24eeC14542bC03424c656005f;
@@ -26,8 +27,7 @@ contract ModeBalancerVault is BaseStrategy {
         address _asset,
         string memory _name
     ) BaseStrategy(_asset, _name) {        
-        IERC20(MODE).safeApprove(address(balancerVault), type(uint256).max);
-        IERC20(USDC).safeApprove(address(balancerVault), type(uint256).max);
+        IERC20(MODE).approve(address(balancerVault), type(uint256).max);
     }
 
     /**
@@ -43,17 +43,77 @@ contract ModeBalancerVault is BaseStrategy {
      */
 
     function _deployFunds(uint256 _amount) internal override {
-        _joinPool(_amount, 0);
+        uint256[] memory amountsIn = new uint256[](1);
+        amountsIn[0] = _amount;
+        _joinPool(poolId, amountsIn, 0);
     }
+
+     /**
+     * @dev Will attempt to free the '_amount' of 'asset'.
+     *
+     * The amount of 'asset' that is already loose has already
+     * been accounted for.
+     *
+     * This function is called during {withdraw} and {redeem} calls.
+     * Meaning that unless a whitelist is implemented it will be
+     * entirely permissionless and thus can be sandwiched or otherwise
+     * manipulated.
+     *
+     * Should not rely on balanceOfAsset() calls other than
+     * for diff accounting purposes.
+     *
+     * Any difference between `_amount` and what is actually freed will be
+     * counted as a loss and passed on to the withdrawer. This means
+     * care should be taken in times of illiquidity. It may be better to revert
+     * if withdraws are simply illiquid so not to realize incorrect losses.
+     *
+     * @param _amount, The amount of 'asset' to be freed.
+     */
+    function _freeFunds(uint256 _amount) internal override {
+        // Exit the balancer pool
+    }
+
+    /**
+     * @dev Internal function to harvest all rewards, redeploy any idle
+     * funds and return an accurate accounting of all funds currently
+     * held by the Strategy.
+     *
+     * This should do any needed harvesting, rewards selling, accrual,
+     * redepositing etc. to get the most accurate view of current assets.
+     *
+     * NOTE: All applicable assets including loose assets should be
+     * accounted for in this function.
+     *
+     * Care should be taken when relying on oracles or swap values rather
+     * than actual amounts as all Strategy profit/loss accounting will
+     * be done based on this returned value.
+     *
+     * This can still be called post a shutdown, a strategist can check
+     * `TokenizedStrategy.isShutdown()` to decide if funds should be
+     * redeployed or simply realize any profits/losses.
+     *
+     * @return _totalAssets A trusted and accurate account for the total
+     * amount of 'asset' the strategy currently holds including idle funds.
+     */
+    function _harvestAndReport()
+        internal
+        override
+        returns (uint256 _totalAssets)
+    {
+        
+    }
+
+
 
     /**
      * This function adds liquidity to a Balancer pool
      */
     function _joinPool(
+        bytes32 _poolId,
         uint256[] memory amountsIn,
-        uint256 memory minBptAmountOut,
-    ) public onlyMultisig {
-        (IERC20[] memory tokens, , ) = balancerVault.getPoolTokens(poolId);
+        uint256 minBptAmountOut
+    ) public {
+        (IERC20[] memory tokens, , ) = balancerVault.getPoolTokens(_poolId);
 
         // Use BalancerErrors to validate input
         _require(amountsIn.length == tokens.length, Errors.INPUT_LENGTH_MISMATCH);
