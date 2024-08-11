@@ -3,7 +3,7 @@ import { defineChain } from "viem";
 // import path from "node:path";
 
 const virtualMainnetRpcUrl = process.env.NEXT_PUBLIC_VIRTUAL_MAINNET_RPC_URL!;
-const modeVirtualMainnetRpcUrl = process.env.NEXT_PUBLIC_VIRTUAL_MAINNET_RPC_URL!;
+const modeVirtualMainnetRpcUrl = process.env.NEXT_PUBLIC_VIRTUAL_MODE_MAINNET_RPC_URL!;
 const virtualMainnetId = virtualMainnetRpcUrl?.split("/").pop();
 const modeVirtualMainnetId = modeVirtualMainnetRpcUrl?.split("/").pop();
 

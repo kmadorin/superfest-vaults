@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   34443: {
     ModeBalancerVaultFactory: {
-      address: "0x14aD61231De340a68a8BBb15cE57B6EeDc7B4193",
+      address: "0x309533d2d1ad3af8a2420f0ce4b35413006bdc03",
       abi: [
         {
           type: "constructor",

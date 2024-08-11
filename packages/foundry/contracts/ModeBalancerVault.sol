@@ -43,8 +43,9 @@ contract ModeBalancerVault is BaseStrategy {
      */
 
     function _deployFunds(uint256 _amount) internal override {
-        uint256[] memory amountsIn = new uint256[](1);
-        amountsIn[0] = _amount;
+        uint256[] memory amountsIn = new uint256[](2);
+        amountsIn[0] = 0;
+				amountsIn[1] = _amount;
         _joinPool(poolId, amountsIn, 0);
     }
 
@@ -70,7 +71,8 @@ contract ModeBalancerVault is BaseStrategy {
      * @param _amount, The amount of 'asset' to be freed.
      */
     function _freeFunds(uint256 _amount) internal override {
-        // Exit the balancer pool
+        // Exit the Balancer pool
+				exitPool(poolId);
     }
 
     /**
@@ -103,8 +105,6 @@ contract ModeBalancerVault is BaseStrategy {
         
     }
 
-
-
     /**
      * This function adds liquidity to a Balancer pool
      */
@@ -121,7 +121,6 @@ contract ModeBalancerVault is BaseStrategy {
         // Encode the userData for a multi-token join
         bytes memory userData = abi.encode(WeightedPoolUserData.JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT, amountsIn, minBptAmountOut);
 
-
         // Now the pool is initialized we have to encode a different join into the userData
 
         IVault.JoinPoolRequest memory request = IVault.JoinPoolRequest({
@@ -132,5 +131,26 @@ contract ModeBalancerVault is BaseStrategy {
         });
 
         balancerVault.joinPool(poolId, address(this), address(this), request);
+    }
+
+		/**
+     * Remove liquidity from Balancer pool
+     */
+    function exitPool(bytes32 _poolId) public {
+        (IERC20[] memory tokens, , ) = balancerVault.getPoolTokens(_poolId);
+
+        // Here we're giving the minimum amounts of each token we'll accept as an output
+        // For simplicity we're setting this to all zeros
+        uint256[] memory minAmountsOut = new uint256[](tokens.length);
+
+        // As we're exiting the pool we need to make an ExitPoolRequest instead
+        IVault.ExitPoolRequest memory request = IVault.ExitPoolRequest({
+            assets: _asIAsset(tokens),
+            minAmountsOut: minAmountsOut,
+            userData: "0x",
+            toInternalBalance: false
+        });
+
+        balancerVault.exitPool(poolId, address(this), payable(address(this)), request);
     }
 }
